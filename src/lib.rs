@@ -22,7 +22,7 @@
 //! 
 //! ```toml
 //! [dependencies]
-//! cache-any = { version = "1.0.0", features = ["full"] }
+//! cache-any = { version = "1", features = ["full"] }
 //! ```
 //! 
 //! ## Concepts
