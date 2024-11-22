@@ -4,3 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+async-trait = { version = "0.1" }
+tokio = { version = "1.41", features = ["sync"] }
+hex = { version = "0.4" }
+
+[dev-dependencies]
+anyhow = { version = "1.0.93" }
+tokio = { version = "1.41.1", features = ["full"] }
