@@ -1,7 +1,14 @@
 [package]
 name = "cache-any"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2021"
+description = "A cache library for Rust"
+license = "MIT"
+repository = "https://github.com/caojen/cache-any"
+readme = "README.md"
+keywords = ["cache", "async"]
+resolver = "2"
+authors = ["caojen <caojen@gmail.com>"]
 
 [package.metadata.docs.rs]
 all-features = true
