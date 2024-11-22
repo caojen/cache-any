@@ -1,5 +1,11 @@
 # cache-any
 
+[![Crates.io](https://img.shields.io/crates/v/cache-any)](https://crates.io/crates/cache-any)
+[![Documentation](https://docs.rs/cache-any/badge.svg)](https://docs.rs/cache-any)
+[![License](https://img.shields.io/crates/l/cache-any)](LICENSE)
+[![Rust](https://img.shields.io/badge/rust-1.75%2B-blue.svg?maxAge=3600)](https://github.com/caojen/cache-any)
+[![Downloads](https://img.shields.io/crates/d/cache-any)](https://crates.io/crates/cache-any)
+
 A cache library for Rust.
 
 This library provides a trait `Cache` and some implementations of it. It defines the basic operations of a cache, for example, `caches::Cache::get`, `caches::Cache::set`. All functions are async, because we may use async storage backends. All caches are key-value based.
