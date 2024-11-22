@@ -112,10 +112,27 @@ impl Cacheable for bool {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use rand::{random, Rng};
+    use rand::{random, Rng, thread_rng};
+    use rand::distributions::Alphanumeric;
 
     #[tokio::test]
     async fn it_works() -> anyhow::Result<()> { Ok(()) }
+
+    #[test]
+    fn test_string() -> anyhow::Result<()> {
+        for _ in 0..1024 {
+            let t: String = (0..32)
+                .map(|_| thread_rng().sample(Alphanumeric) as char)
+                .collect();
+
+            let v = Cacheable::to_bytes(&t);
+            let d: String = Cacheable::from_bytes(&v).unwrap();
+
+            assert_eq!(t, d);
+        }
+
+        Ok(())
+    }
 
     #[test]
     fn test_numeric() -> anyhow::Result<()> {
