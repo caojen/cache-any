@@ -8,6 +8,10 @@ pub use redis::*;
 
 use crate::Cacheable;
 
+/// A cache trait.
+/// 
+/// It describes the basic operations of a cache.
+/// All functions are async, because we may use async storage backends.
 #[async_trait::async_trait]
 #[allow(clippy::len_without_is_empty)]
 pub trait Cache: Clone {

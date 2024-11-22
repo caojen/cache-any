@@ -6,6 +6,22 @@ use std::fmt::Debug;
 use tokio::sync::RwLock;
 use crate::Cacheable;
 use crate::Cache;
+
+/// Cache using memory.
+/// 
+/// Data is stored in memory. However, this cache will serialize and deserialize data,
+/// so it may not be so efficient.
+/// 
+/// [`MemoryCache`] implements [`Cache`]. See [`Cache`] for more details.
+/// 
+/// ## Example
+/// 
+/// ```rust
+/// let cache = MemoryCache::default();
+/// 
+/// cache.set("a", 1).await.unwrap();
+/// assert_eq!(cache.get::<u8>("a").await.unwrap().unwrap(), 1);
+/// ```
 #[derive(Debug, Clone)]
 pub struct MemoryCache<K: Hash + Debug + Clone + Eq + PartialEq + Send + Sync> {
     inner: Arc<RwLock<Inner<K>>>,
@@ -125,6 +141,8 @@ mod tests {
         assert_eq!(cache.get::<String>("c").await?.unwrap(), String::from("ccc"));
         assert_eq!(cache.get::<String>("d").await?, None);
         assert_eq!(nc.len().await.unwrap(), 3);
+
+        assert_eq!(cache.get::<()>("non-existent-key").await?, None);
 
         Ok(())
     }

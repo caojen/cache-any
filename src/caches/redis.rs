@@ -5,6 +5,30 @@ use redis::AsyncCommands;
 use tokio::sync::RwLock;
 use crate::{Cache, Cacheable};
 
+/// Cache using redis.
+/// 
+/// It uses `redis::Client` to connect to redis.
+/// Feature `redis` must be enabled.
+/// 
+/// A custom prefix should be specified. It will be used as the prefix of the redis key.
+/// 
+/// [`RedisCache`] implements [`Cache`]. See [`Cache`] for more details.
+/// 
+/// ## Example
+/// 
+/// ```rust,ignore
+/// let client = redis::Client::open("redis://127.0.0.1:6379/").unwrap();
+/// 
+/// // `aaa` is the prefix
+/// let prefix = "aaa";
+/// let cache = RedisCache::new(client, prefix).await.unwrap(); 
+/// 
+/// cache.set("a", 1).await.unwrap();
+/// assert_eq!(cache.get::<u8>("a").await.unwrap().unwrap(), 1);
+/// 
+/// // Redis Data:
+/// // aaa:a -> {1}
+/// ```
 #[derive(Debug)]
 pub struct RedisCache<K: AsRef<str> + Send + Sync> {
     __marker: PhantomData<K>,

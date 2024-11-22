@@ -26,6 +26,16 @@ pub trait Cacheable: Debug {
     }
 }
 
+impl Cacheable for () {
+    fn to_bytes(&self) -> Vec<u8> {
+        vec![]
+    }
+
+    fn from_bytes(_bytes: &[u8]) -> anyhow::Result<Self> {
+        Ok(())
+    }
+}
+
 impl<T: Cacheable> Cacheable for Arc<T> {
     fn to_bytes(&self) -> Vec<u8> {
         self.as_ref().to_bytes()
