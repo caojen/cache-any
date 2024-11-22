@@ -11,7 +11,7 @@ pub trait Cacheable: Debug {
     fn to_bytes(&self) -> Vec<u8>;
 
     /// Convert bytes to [`Cacheable`].
-    fn from_bytes(bytes: &[u8]) -> crate::Result<Self>
+    fn from_bytes(bytes: &[u8]) -> anyhow::Result<Self>
     where
         Self: Sized;
 
@@ -19,7 +19,7 @@ pub trait Cacheable: Debug {
         hex::encode(self.to_bytes())
     }
 
-    fn from_hex(hex: &str) -> crate::Result<Self>
+    fn from_hex(hex: &str) -> anyhow::Result<Self>
     where
         Self: Sized,
     {
@@ -33,11 +33,24 @@ impl<T: Cacheable> Cacheable for Arc<T> {
         self.as_ref().to_bytes()
     }
 
-    fn from_bytes(bytes: &[u8]) -> crate::Result<Self>
+    fn from_bytes(bytes: &[u8]) -> anyhow::Result<Self>
     where
         Self: Sized,
     {
         Ok(Arc::new(T::from_bytes(bytes)?))
+    }
+}
+
+impl Cacheable for Vec<u8> {
+    fn to_bytes(&self) -> Vec<u8> {
+        self.clone()
+    }
+
+    fn from_bytes(bytes: &[u8]) -> anyhow::Result<Self>
+    where
+        Self: Sized,
+    {
+        Ok(bytes.to_vec())
     }
 }
 
@@ -46,7 +59,7 @@ impl Cacheable for String {
         self.as_bytes().to_vec()
     }
 
-    fn from_bytes(bytes: &[u8]) -> crate::Result<Self>
+    fn from_bytes(bytes: &[u8]) -> anyhow::Result<Self>
     where
         Self: Sized,
     {
@@ -65,7 +78,7 @@ macro_rules! impl_numeric {
                 wtr
             }
 
-            fn from_bytes(bytes: &[u8]) -> crate::Result<Self>
+            fn from_bytes(bytes: &[u8]) -> anyhow::Result<Self>
             where
                 Self: Sized
             {
@@ -101,7 +114,7 @@ impl Cacheable for bool {
         }
     }
 
-    fn from_bytes(bytes: &[u8]) -> crate::Result<Self>
+    fn from_bytes(bytes: &[u8]) -> anyhow::Result<Self>
     where
         Self: Sized,
     {

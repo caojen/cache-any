@@ -9,8 +9,8 @@ use crate::Cacheable;
 pub trait Cache: Clone {
     type Key: Hash + Debug + Clone + Eq + PartialEq;
 
-    async fn get<T: Cacheable + Send + Sync>(&self, key: Self::Key) -> crate::Result<Option<T>>;
-    async fn set<T: Cacheable + Send + Sync>(&self, key: Self::Key, value: T) -> crate::Result<()>;
-    async fn delete(&self, key: Self::Key) -> crate::Result<()>;
-    async fn len(&self) -> crate::Result<usize>;
+    async fn get<T: Cacheable + Send + Sync>(&self, key: Self::Key) -> anyhow::Result<Option<T>>;
+    async fn set<T: Cacheable + Send + Sync>(&self, key: Self::Key, value: T) -> anyhow::Result<()>;
+    async fn delete(&self, key: Self::Key) -> anyhow::Result<()>;
+    async fn len(&self) -> anyhow::Result<usize>;
 }
