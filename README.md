@@ -3,7 +3,7 @@
 [![Crates.io](https://img.shields.io/crates/v/cache-any)](https://crates.io/crates/cache-any)
 [![Documentation](https://docs.rs/cache-any/badge.svg)](https://docs.rs/cache-any)
 [![License](https://img.shields.io/crates/l/cache-any)](LICENSE)
-[![Rust](https://img.shields.io/badge/rust-1.75%2B-blue.svg?maxAge=3600)](https://github.com/caojen/cache-any)
+[![Rust](https://img.shields.io/badge/rust-1.69%2B-blue.svg?maxAge=3600)](https://github.com/caojen/cache-any)
 [![Downloads](https://img.shields.io/crates/d/cache-any)](https://crates.io/crates/cache-any)
 
 A cache library for Rust.
