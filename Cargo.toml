@@ -7,7 +7,9 @@ edition = "2021"
 async-trait = { version = "0.1" }
 tokio = { version = "1.41", features = ["sync"] }
 hex = { version = "0.4" }
+byteorder = { version = "1.5", features = ["i128"] }
 
 [dev-dependencies]
 anyhow = { version = "1.0.93" }
 tokio = { version = "1.41.1", features = ["full"] }
+rand = { version = "0.8.5" }
