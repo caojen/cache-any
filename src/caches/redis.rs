@@ -1,8 +1,7 @@
 use std::fmt::{Debug, Formatter};
-use std::hash::Hash;
 use std::marker::PhantomData;
 use std::sync::Arc;
-use redis::{AsyncCommands, Commands};
+use redis::AsyncCommands;
 use tokio::sync::RwLock;
 use crate::{Cache, Cacheable};
 
@@ -56,7 +55,7 @@ where
             inner.conn.get(key).await?
         };
 
-        let ret = data.as_ref().map(|data| data.as_str())
+        let ret = data.as_deref()
             .map(T::from_hex)
             .transpose()?;
 

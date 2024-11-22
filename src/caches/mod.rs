@@ -6,11 +6,10 @@ mod redis;
 #[cfg(feature = "redis")]
 pub use redis::*;
 
-use std::hash::Hash;
-use std::fmt::Debug;
 use crate::Cacheable;
 
 #[async_trait::async_trait]
+#[allow(clippy::len_without_is_empty)]
 pub trait Cache: Clone {
     type Key;
 
