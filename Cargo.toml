@@ -3,12 +3,23 @@ name = "cache-any"
 version = "0.1.0"
 edition = "2021"
 
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[features]
+default = [ "full" ]
+full = [
+    "redis",
+]
+
 [dependencies]
 async-trait = { version = "0.1" }
 tokio = { version = "1.41", features = ["sync"] }
 hex = { version = "0.4" }
 byteorder = { version = "1.5", features = ["i128"] }
 anyhow = { version = "1.0" }
+redis = { version = "0.27.5", features = ["tokio-comp", "tokio-rustls-comp", "aio"], optional = true }
 
 [dev-dependencies]
 tokio = { version = "1.41.1", features = ["full"] }
