@@ -88,6 +88,12 @@
 //! cache.set("my-struct", MyStruct { a: 1, b: String::from("hello") }).await.unwrap();
 //! ```
 //!
+//! ## Work in Progress
+//! 
+//! * Add a `MysqlCache` implementation.
+//! * Add examples for each cache implementation.
+//! * Add more tests.
+//! 
 //! ## Contributing
 //! 
 //! Any contributions are welcome.
@@ -96,7 +102,10 @@
 //! feel free to open an issue or a pull request at [Github](https://github.com/caojen/cache-any).
 //! 
 //! If bugs are found, just file an issue at [Github](https://github.com/caojen/cache-any), and I will fix it **ASAP**.
-
+//! 
+//! ## License
+//! 
+//! This project is licensed under the MIT License.
 
 mod cacheable;
 pub use cacheable::*;
