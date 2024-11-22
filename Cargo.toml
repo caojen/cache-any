@@ -24,3 +24,5 @@ redis = { version = "0.27.5", features = ["tokio-comp", "tokio-rustls-comp", "ai
 [dev-dependencies]
 tokio = { version = "1.41.1", features = ["full"] }
 rand = { version = "0.8.5" }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1" }
