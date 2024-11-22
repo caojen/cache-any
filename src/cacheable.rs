@@ -92,10 +92,27 @@ impl_numeric!(
     usize, isize,
 );
 
+impl Cacheable for bool {
+    fn to_bytes(&self) -> Vec<u8> {
+        if *self {
+            Cacheable::to_bytes(&1)
+        } else {
+            Cacheable::to_bytes(&0)
+        }
+    }
+
+    fn from_bytes(bytes: &[u8]) -> crate::Result<Self>
+    where
+        Self: Sized,
+    {
+        Ok(!bytes.iter().all(|byte| *byte == 0))
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use rand::Rng;
+    use rand::{random, Rng};
 
     #[tokio::test]
     async fn it_works() -> anyhow::Result<()> { Ok(()) }
@@ -105,7 +122,7 @@ mod tests {
         macro_rules! test {
             ($ty: ty) => {
                 for _ in 0..1024 {
-                    let num: $ty = rand::thread_rng().gen();
+                    let num: $ty = random();
                     let v = Cacheable::to_bytes(&num);
                     let d: $ty = Cacheable::from_bytes(&v).unwrap();
                     assert_eq!(num, d);
@@ -132,14 +149,36 @@ mod tests {
                     let num = Arc::new(num);
                     let v = Cacheable::to_bytes(&num);
                     let arc_d: Arc<$ty> = Cacheable::from_bytes(&v).unwrap();
-                    let d = Cacheable::from_bytes(&v).unwrap();
+                    let d: $ty = Cacheable::from_bytes(&v).unwrap();
                     assert_eq!(num, arc_d);
-                    assert_eq!(d, arc_d);
+                    assert_eq!(d, *arc_d);
                 }
             };
             ($($ty: ty),+ $(,)?) => {
                 $(test_arc!($ty);)+
             };
+        }
+
+        test_arc!(
+            u128, i128,
+            u64, i64,
+            u32, i32,
+            u16, i16,
+            u8, i8,
+            usize, isize,
+        );
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_boolean() -> anyhow::Result<()> {
+        for _ in 0..1024 {
+            let b: bool = random();
+            let v = b.to_bytes();
+            let d = Cacheable::from_bytes(&v).unwrap();
+
+            assert_eq!(b, d);
         }
 
         Ok(())
