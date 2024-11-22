@@ -3,9 +3,7 @@ use std::io::Cursor;
 use std::sync::Arc;
 use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
 
-/// [`Cacheable`] trait.
-///
-/// It is used to convert [`Cacheable`] to bytes and vice versa.
+/// used to convert [`Cacheable`] to bytes and vice versa.
 pub trait Cacheable: Debug {
     /// Convert [`Cacheable`] to bytes.
     fn to_bytes(&self) -> Vec<u8>;
