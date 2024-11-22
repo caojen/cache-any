@@ -16,6 +16,14 @@ By default, it provides a simple memory cache as example. See `caches::MemoryCac
 
 * `redis`: Use redis as storage backend. See `caches::RedisCache`.
 
+## Usage
+Add `cache-any` to your `Cargo.toml`:
+
+```toml
+[dependencies]
+cache-any = { version = "1.0.0", features = ["full"] }
+```
+
 ## Concepts
 
 * **Key**: The key of a cache is `Cache::Key`. It is specified by the cache implementation. Usually it is a string-like type.
