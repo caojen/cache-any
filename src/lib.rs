@@ -15,6 +15,7 @@
 //! Other caches are available in below features:
 //! 
 //! * `redis`: Use redis as storage backend. See [`caches::RedisCache`].
+//! * `mysql`: Use mysql as storage backend. See [`caches::MySqlCache`].
 //! 
 //! ## Usage
 //! 
@@ -99,10 +100,8 @@
 //!
 //! ## Work in Progress
 //! 
-//! * Add a `MysqlCache` implementation.
 //! * Add examples for each cache implementation.
-//! * Add more tests.
-//! 
+//!
 //! ## Contributing
 //! 
 //! Any contributions are welcome.
