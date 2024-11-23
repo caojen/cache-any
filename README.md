@@ -15,7 +15,7 @@ By default, it provides a simple memory cache as example. See `caches::MemoryCac
 ## Features
 
 * `redis`: Use redis as storage backend. See `caches::RedisCache`.
-* `mysql`: Use mysql as storage backend. See [`caches::MySqlCache`].
+* `mysql`: Use mysql as storage backend. See `caches::MySqlCache`.
 
 ## Usage
 Add `cache-any` to your `Cargo.toml`:
