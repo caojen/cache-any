@@ -1,7 +1,6 @@
 use std::ops::{Deref, DerefMut};
 use std::sync::Arc;
 use std::collections::HashMap;
-use std::hash::Hash;
 use std::fmt::Debug;
 use tokio::sync::RwLock;
 use crate::Cacheable;
@@ -23,20 +22,18 @@ use crate::Cache;
 /// assert_eq!(cache.get::<u8>("a").await.unwrap().unwrap(), 1);
 /// ```
 #[derive(Debug, Clone)]
-pub struct MemoryCache<K: Hash + Debug + Clone + Eq + PartialEq + Send + Sync> {
-    inner: Arc<RwLock<Inner<K>>>,
+pub struct MemoryCache {
+    inner: Arc<RwLock<Inner>>,
 }
 
-impl<K> Default for MemoryCache<K>
-where K: Hash + Debug + Clone + Eq + PartialEq + Send + Sync
+impl Default for MemoryCache
 {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<K> MemoryCache<K>
-where K: Hash + Debug + Clone + Eq + PartialEq + Send + Sync
+impl MemoryCache
 {
     pub fn new() -> Self {
         Self::with_capacity(0)
@@ -52,15 +49,11 @@ where K: Hash + Debug + Clone + Eq + PartialEq + Send + Sync
 }
 
 #[async_trait::async_trait]
-impl<K> Cache for MemoryCache<K>
-where
-    K: Hash + Debug + Clone + Eq + PartialEq + Send + Sync,
+impl Cache for MemoryCache
 {
-    type Key = K;
-
-    async fn get<T: Cacheable + Send + Sync>(&self, key: Self::Key) -> anyhow::Result<Option<T>> {
+    async fn get<T: Cacheable + Send + Sync>(&self, key: &str) -> anyhow::Result<Option<T>> {
         let inner = self.inner.read().await;
-        let ret = inner.get(&key)
+        let ret = inner.get(key.as_bytes())
             .map(|val| val.as_slice())
             .map(T::from_bytes)
             .transpose()?;
@@ -68,18 +61,18 @@ where
         Ok(ret)
     }
 
-    async fn set<T: Cacheable + Send + Sync>(&self, key: Self::Key, value: T) -> anyhow::Result<()> {
+    async fn set<T: Cacheable + Send + Sync>(&self, key: &str, value: T) -> anyhow::Result<()> {
         let bytes = value.to_bytes();
 
         let mut inner = self.inner.write().await;
-        inner.insert(key, bytes);
+        inner.insert(key.as_bytes().to_vec(), bytes);
 
         Ok(())
     }
 
-    async fn delete(&self, key: Self::Key) -> anyhow::Result<()> {
+    async fn delete(&self, key: &str) -> anyhow::Result<()> {
         let mut inner = self.inner.write().await;
-        inner.remove(&key);
+        inner.remove(key.as_bytes());
 
         Ok(())
     }
@@ -91,24 +84,20 @@ where
 }
 
 #[derive(Debug)]
-struct Inner<K: Hash + Debug + Clone + Eq + PartialEq + Send + Sync> {
-    map: HashMap<K, Vec<u8>>,
+struct Inner {
+    map: HashMap<Vec<u8>, Vec<u8>>,
 }
 
-impl<K> Deref for Inner<K>
-where
-    K: Hash + Debug + Clone + Eq + PartialEq + Send + Sync,
+impl Deref for Inner
 {
-    type Target = HashMap<K, Vec<u8>>;
+    type Target = HashMap<Vec<u8>, Vec<u8>>;
 
     fn deref(&self) -> &Self::Target {
         &self.map
     }
 }
 
-impl<K> DerefMut for Inner<K>
-where
-    K: Hash + Debug + Clone + Eq + PartialEq + Send + Sync,
+impl DerefMut for Inner
 {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.map   

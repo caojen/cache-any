@@ -9,9 +9,12 @@
 //! It defines the basic operations of a cache, for
 //! example, [`caches::Cache::get`], [`caches::Cache::set`].
 //! All functions are async, because we may use async storage backends.
+//!
 //! All caches are key-value based.
 //! 
 //! By default, it provides a simple memory cache as example. See [`caches::MemoryCache`].
+//! But it's not recommended to use [`caches::MemoryCache`] directly in production.
+//!
 //! Other caches are available in below features:
 //! 
 //! * `redis`: Use redis as storage backend. See [`caches::RedisCache`].

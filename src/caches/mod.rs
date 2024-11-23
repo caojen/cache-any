@@ -6,10 +6,10 @@ mod redis;
 #[cfg(feature = "redis")]
 pub use redis::*;
 
-#[cfg(feature = "mysql")]
-mod mysql;
-#[cfg(feature = "mysql")]
-pub use mysql::*;
+// #[cfg(feature = "mysql")]
+// mod mysql;
+// #[cfg(feature = "mysql")]
+// pub use mysql::*;
 
 use crate::Cacheable;
 
@@ -20,10 +20,8 @@ use crate::Cacheable;
 #[async_trait::async_trait]
 #[allow(clippy::len_without_is_empty)]
 pub trait Cache: Clone {
-    type Key;
-
-    async fn get<T: Cacheable + Send + Sync>(&self, key: Self::Key) -> anyhow::Result<Option<T>>;
-    async fn set<T: Cacheable + Send + Sync>(&self, key: Self::Key, value: T) -> anyhow::Result<()>;
-    async fn delete(&self, key: Self::Key) -> anyhow::Result<()>;
+    async fn get<T: Cacheable + Send + Sync>(&self, key: &str) -> anyhow::Result<Option<T>>;
+    async fn set<T: Cacheable + Send + Sync>(&self, key: &str, value: T) -> anyhow::Result<()>;
+    async fn delete(&self, key: &str) -> anyhow::Result<()>;
     async fn len(&self) -> anyhow::Result<usize>;
 }
