@@ -43,9 +43,7 @@ pub struct MySqlCache {
 
 #[async_trait::async_trait]
 impl Cache for MySqlCache {
-    type Key = String;
-
-    async fn get<T: Cacheable + Send + Sync>(&self, key: Self::Key) -> anyhow::Result<Option<T>> {
+    async fn get<T: Cacheable + Send + Sync>(&self, key: &str) -> anyhow::Result<Option<T>> {
         let sql = format!(r#"
             SELECT {}
             FROM {}
@@ -54,7 +52,7 @@ impl Cache for MySqlCache {
         "#, &self.inner.value_field, &self.inner.table, &self.inner.key_field);
 
         let value: Option<(String,)> = sqlx::query_as(&sql)
-            .bind(&key)
+            .bind(key)
             .fetch_optional(&self.inner.pool)
             .await?;
 
@@ -67,7 +65,7 @@ impl Cache for MySqlCache {
         Ok(result)
     }
 
-    async fn set<T: Cacheable + Send + Sync>(&self, key: Self::Key, value: T) -> anyhow::Result<()> {
+    async fn set<T: Cacheable + Send + Sync>(&self, key: &str, value: T) -> anyhow::Result<()> {
         let value = value.to_hex();
 
         let sql = format!(r#"
@@ -82,7 +80,7 @@ impl Cache for MySqlCache {
         );
 
         sqlx::query(&sql)
-            .bind(&key)
+            .bind(key)
             .bind(&value)
             .bind(&value)
             .execute(&self.inner.pool)
@@ -91,14 +89,14 @@ impl Cache for MySqlCache {
         Ok(())
     }
 
-    async fn delete(&self, key: Self::Key) -> anyhow::Result<()> {
+    async fn delete(&self, key: &str) -> anyhow::Result<()> {
         let sql = format!(r#"
             DELETE FROM {}
             WHERE {} = ?
         "#, &self.inner.table, &self.inner.key_field);
 
         sqlx::query(&sql)
-            .bind(&key)
+            .bind(key)
             .execute(&self.inner.pool)
             .await?;
 
@@ -224,17 +222,17 @@ mod tests {
             .value_field("val")
             .finish();
 
-        cache.set(String::from("user_id"), 114514).await?;
-        cache.set(String::from("username"), String::from("jack")).await?;
+        cache.set("user_id", 114514).await?;
+        cache.set("username", String::from("jack")).await?;
 
-        let user_id: usize = cache.get(String::from("user_id")).await?.unwrap();
-        let username: String = cache.get(String::from("username")).await?.unwrap();
+        let user_id: usize = cache.get("user_id").await?.unwrap();
+        let username: String = cache.get("username").await?.unwrap();
 
         assert_eq!(user_id, 114514);
         assert_eq!(username, String::from("jack"));
 
-        cache.delete(String::from("user_id")).await?;
-        let user_id: Option<()> = cache.get(String::from("user_id")).await?;
+        cache.delete("user_id").await?;
+        let user_id: Option<()> = cache.get("user_id").await?;
         assert_eq!(user_id, None);
 
         let len = cache.len().await?;
