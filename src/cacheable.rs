@@ -214,7 +214,7 @@ mod tests {
         for _ in 0..1024 {
             let b: bool = random();
             let v = b.to_bytes();
-            let d = Cacheable::from_bytes(&v).unwrap();
+            let d: bool = Cacheable::from_bytes(&v).unwrap();
 
             assert_eq!(b, d);
         }

@@ -23,8 +23,9 @@ impl Cache for MysqlCache {
             .fetch_optional(&self.inner.pool)
             .await?;
 
-        let result = value.map(|value| value.0)
-            .map(String::as_str)
+        let result = value.as_ref()
+            .map(|value| &value.0)
+            .map(|value| value.as_str())
             .map(T::from_hex)
             .transpose()?;
 
@@ -35,20 +36,19 @@ impl Cache for MysqlCache {
         let value = value.to_hex();
 
         let sql = format!(r#"
-            INSERT INTO {}
-            SET {} = ?
-            WHERE {} = ?
+            INSERT INTO {} ({}, {})
+            VALUES (?, ?)
             ON DUPLICATE KEY UPDATE {} = ?
         "#,
             &self.inner.table,
-            &self.inner.value_field,
             &self.inner.key_field,
+            &self.inner.value_field,
             &self.inner.value_field,
         );
 
         sqlx::query(&sql)
-            .bind(&value)
             .bind(&key)
+            .bind(&value)
             .bind(&value)
             .execute(&self.inner.pool)
             .await?;
@@ -93,7 +93,7 @@ pub struct MysqlCacheBuilder {
 impl MysqlCacheBuilder {
     pub fn new(pool: sqlx::MySqlPool) -> Self {
         Self {
-            key_field: String::from("key"),
+            key_field: String::from("name"),
             value_field: String::from("val"),
             table: String::from("cache"),
             pool,
@@ -133,4 +133,49 @@ struct Inner {
     value_field: String,
     table: String,
     pool: sqlx::MySqlPool,
+}
+
+#[cfg(test)]
+mod tests {
+    use sqlx::MySqlPool;
+    use super::*;
+
+    #[tokio::test]
+    async fn test_mysql_cache() -> anyhow::Result<()> {
+        // create user test@'%' identified by '123456';
+        // create database dev;
+        // grant all privileges on dev.* to test@'%';
+        //
+        // CREATE TABLE IF NOT EXISTS my_cache (
+        //     name varchar(255) not null,
+        //     val text not null,
+        //     primary key (name)
+        // );
+
+        let pool = MySqlPool::connect("mysql://test:123456@127.0.0.1:3306/dev").await?;
+
+        let cache = MysqlCacheBuilder::new(pool)
+            .table("my_cache")
+            .key_field("name")
+            .value_field("val")
+            .finish();
+
+        cache.set(String::from("user_id"), 114514).await?;
+        cache.set(String::from("username"), String::from("jack")).await?;
+
+        let user_id: usize = cache.get(String::from("user_id")).await?.unwrap();
+        let username: String = cache.get(String::from("username")).await?.unwrap();
+
+        assert_eq!(user_id, 114514);
+        assert_eq!(username, String::from("jack"));
+
+        cache.delete(String::from("user_id")).await?;
+        let user_id: Option<()> = cache.get(String::from("user_id")).await?;
+        assert_eq!(user_id, None);
+
+        let len = cache.len().await?;
+        println!("len = {}", len);
+
+        Ok(())
+    }
 }
