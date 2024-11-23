@@ -1,13 +1,48 @@
 use std::sync::Arc;
 use crate::{Cache, Cacheable};
 
+/// [`MySqlCache`] is a cache using mysql to store data.
+/// 
+/// It uses [`sqlx::MySqlPool`] to connect to mysql.
+/// Feature `mysql` must be enabled.
+/// 
+/// ## Prepare
+/// 
+/// Create a table named `cache` with the following schema:
+/// 
+/// ```sql
+/// CREATE TABLE IF NOT EXISTS cache (
+///     name varchar(255) not null,
+///     val text not null,
+///     primary key (name)
+/// );
+/// ```
+/// 
+/// **Note**:
+/// 1. You can change the table name and the field names.
+/// 2. The `name` field (or whatever you specify) is the primary key of the cache.
+/// 
+/// ## Build
+/// 
+/// Use [`MySqlCacheBuilder`] to build a [`MySqlCache`].
+/// You need to specify the table name and the field names when building.
+/// 
+/// ```rust,ignore
+/// let pool = MySqlPool::connect("mysql://test:123456@127.0.0.1:3306/dev").await?;
+/// let cache = MySqlCacheBuilder::new(pool)
+///     .table("cache")
+///     .key_field("name")
+///     .value_field("val")
+///     .finish();
+/// ```
+/// 
 #[derive(Debug, Clone)]
-pub struct MysqlCache {
+pub struct MySqlCache {
     inner: Arc<Inner>,
 }
 
 #[async_trait::async_trait]
-impl Cache for MysqlCache {
+impl Cache for MySqlCache {
     type Key = String;
 
     async fn get<T: Cacheable + Send + Sync>(&self, key: Self::Key) -> anyhow::Result<Option<T>> {
@@ -82,15 +117,17 @@ impl Cache for MysqlCache {
     }
 }
 
+/// [`MySqlCacheBuilder`] is used to build a [`MySqlCache`].
 #[derive(Debug, Clone)]
-pub struct MysqlCacheBuilder {
+pub struct MySqlCacheBuilder {
     key_field: String,
     value_field: String,
     table: String,
     pool: sqlx::MySqlPool,
 }
 
-impl MysqlCacheBuilder {
+impl MySqlCacheBuilder {
+    /// Create a new [`MySqlCacheBuilder`]. You need to specify the [`sqlx::MySqlPool`].
     pub fn new(pool: sqlx::MySqlPool) -> Self {
         Self {
             key_field: String::from("name"),
@@ -100,23 +137,27 @@ impl MysqlCacheBuilder {
         }
     }
 
+    /// Set the key field.
     pub fn key_field<S: ToString>(mut self, key: S) -> Self {
         self.key_field = key.to_string();
         self
     }
 
+    /// Set the value field.
     pub fn value_field<S: ToString>(mut self, value: S) -> Self {
         self.value_field = value.to_string();
         self
     }
 
+    /// Set the table name.
     pub fn table<S: ToString>(mut self, table: S) -> Self {
         self.table = table.to_string();
         self
     }
 
-    pub fn finish(self) -> MysqlCache {
-        MysqlCache {
+    /// Finish and build a [`MySqlCache`].
+    pub fn finish(self) -> MySqlCache {
+        MySqlCache {
             inner: Arc::new(Inner {
                 key_field: self.key_field,
                 value_field: self.value_field,
@@ -143,7 +184,7 @@ mod tests {
     #[tokio::test]
     async fn test_mysql_cache_builder() -> anyhow::Result<()> {
         let pool = MySqlPool::connect("mysql://test:123456@127.0.0.1:3306/dev").await?;
-        let cache = MysqlCacheBuilder::new(pool)
+        let cache = MySqlCacheBuilder::new(pool)
             .table("my_cache")
             .key_field("name")
             .value_field("val")
@@ -177,7 +218,7 @@ mod tests {
 
         let pool = MySqlPool::connect("mysql://test:123456@127.0.0.1:3306/dev").await?;
 
-        let cache = MysqlCacheBuilder::new(pool)
+        let cache = MySqlCacheBuilder::new(pool)
             .table("my_cache")
             .key_field("name")
             .value_field("val")
