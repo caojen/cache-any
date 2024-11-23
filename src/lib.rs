@@ -31,7 +31,7 @@
 //! 
 //! ## Concepts
 //! 
-//! * **Key**: The key of a cache is [`Cache::Key`]. It is specified by the cache implementation. Usually it is a string-like type.
+//! * **Key**: Specified by the cache implementation. Usually it is a string-like type (&str, String, ...).
 //! * **Value**: The value of a cache is a [`Cacheable`] value.
 //! 
 //! [`Cacheable`] is a trait that describes how to convert a `value` to bytes and vice versa.
