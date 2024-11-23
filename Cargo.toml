@@ -6,7 +6,7 @@ description = "A cache library for Rust"
 license = "MIT"
 repository = "https://github.com/caojen/cache-any"
 readme = "README.md"
-keywords = ["cache", "async"]
+keywords = ["cache", "async", "redis", "mysql"]
 resolver = "2"
 authors = ["caojen <caojen@gmail.com>"]
 
