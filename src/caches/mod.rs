@@ -6,6 +6,11 @@ mod redis;
 #[cfg(feature = "redis")]
 pub use redis::*;
 
+#[cfg(feature = "mysql")]
+mod mysql;
+#[cfg(feature = "mysql")]
+pub use mysql::*;
+
 use crate::Cacheable;
 
 /// A cache trait.

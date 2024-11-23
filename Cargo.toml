@@ -18,7 +18,9 @@ rustdoc-args = ["--cfg", "docsrs"]
 default = [ "full" ]
 full = [
     "redis",
+    "mysql",
 ]
+mysql = [ "sqlx" ]
 
 [dependencies]
 async-trait = { version = "0.1" }
@@ -27,6 +29,7 @@ hex = { version = "0.4" }
 byteorder = { version = "1.5", features = ["i128"] }
 anyhow = { version = "1.0" }
 redis = { version = "0.27.5", features = ["tokio-comp", "tokio-rustls-comp", "aio"], optional = true }
+sqlx = { version = "0.8.2", features = ["runtime-tokio", "tls-rustls", "mysql"], optional = true }
 
 [dev-dependencies]
 tokio = { version = "1.41.1", features = ["full"] }
