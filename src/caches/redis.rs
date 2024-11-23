@@ -143,6 +143,8 @@ mod tests {
         let client = Client::open("redis://127.0.0.1:6379/")?;
         let cache = RedisCache::new(client, "aaa").await?;
 
+        assert_eq!(cache.inner.read().await.redis_key("username"), String::from("aaa:username"));
+
         assert_eq!(cache.get::<u8>("none").await.unwrap(), None);
         cache.set("a", String::from("aaaaaa")).await?;
         assert_eq!(cache.get::<String>("a").await.unwrap().unwrap(), String::from("aaaaaa"));
@@ -153,6 +155,23 @@ mod tests {
         assert_eq!(cache.get::<String>("b").await.unwrap().unwrap(), String::from("bbbbbb"));
         cache.set("c", 1).await?;
         assert_eq!(cache.get::<usize>("c").await.unwrap().unwrap(), 1);
+
+        let cloned = cache.clone();
+        assert_eq!(cloned.get::<u8>("none").await.unwrap(), None);
+        cloned.set("a", String::from("aaaaaa")).await?;
+        assert_eq!(cloned.get::<String>("a").await.unwrap().unwrap(), String::from("aaaaaa"));
+        cloned.set("a", String::from("aaaaaaa")).await?;
+        assert_eq!(cloned.get::<String>("a").await.unwrap().unwrap(), String::from("aaaaaaa"));
+
+        cloned.set("b", String::from("bbbbbb")).await?;
+        assert_eq!(cloned.get::<String>("b").await.unwrap().unwrap(), String::from("bbbbbb"));
+        cloned.set("c", 1).await?;
+        assert_eq!(cloned.get::<usize>("c").await.unwrap().unwrap(), 1);
+
+        assert_eq!(cloned.len().await.unwrap(), 0);
+
+        println!("{:?}", cache);
+        println!("{:?}", cloned);
         Ok(())
     }
 }

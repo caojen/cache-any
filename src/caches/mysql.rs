@@ -141,6 +141,29 @@ mod tests {
     use super::*;
 
     #[tokio::test]
+    async fn test_mysql_cache_builder() -> anyhow::Result<()> {
+        let pool = MySqlPool::connect("mysql://test:123456@127.0.0.1:3306/dev").await?;
+        let cache = MysqlCacheBuilder::new(pool)
+            .table("my_cache")
+            .key_field("name")
+            .value_field("val")
+            .finish();
+
+        assert_eq!(cache.inner.table, String::from("my_cache"));
+        assert_eq!(cache.inner.key_field, String::from("name"));
+        assert_eq!(cache.inner.value_field, String::from("val"));
+
+        let cloned_cache = cache.clone();
+        assert_eq!(cloned_cache.inner.table, String::from("my_cache"));
+        assert_eq!(cloned_cache.inner.key_field, String::from("name"));
+        assert_eq!(cloned_cache.inner.value_field, String::from("val"));
+
+        println!("{:?}", cloned_cache);
+
+        Ok(())
+    }
+
+    #[tokio::test]
     async fn test_mysql_cache() -> anyhow::Result<()> {
         // create user test@'%' identified by '123456';
         // create database dev;
