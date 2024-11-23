@@ -7,7 +7,7 @@ use crate::{Cache, Cacheable};
 
 /// Cache using redis.
 /// 
-/// It uses `redis::Client` to connect to redis.
+/// It uses [`redis::Client`] to connect to redis.
 /// Feature `redis` must be enabled.
 /// 
 /// A custom prefix should be specified. It will be used as the prefix of the redis key.
