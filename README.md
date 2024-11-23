@@ -58,6 +58,7 @@ let b_value: String = cache.get("b").await.unwrap().unwrap();
 assert_eq!(b_value, String::from("hello"));
 ```
 
+**More examples**: [GitHub](https://github.com/caojen/cache-any/tree/main/examples)
 
 ## Extend Cacheable
 
