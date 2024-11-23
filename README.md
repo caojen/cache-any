@@ -15,6 +15,7 @@ By default, it provides a simple memory cache as example. See `caches::MemoryCac
 ## Features
 
 * `redis`: Use redis as storage backend. See `caches::RedisCache`.
+* `mysql`: Use mysql as storage backend. See [`caches::MySqlCache`].
 
 ## Usage
 Add `cache-any` to your `Cargo.toml`:
@@ -95,9 +96,7 @@ cache.set("my-struct", MyStruct { a: 1, b: String::from("hello") }).await.unwrap
 
 ## Work in Progress
 
-* Add a `MysqlCache` implementation.
 * Add examples for each cache implementation.
-* Add more tests.
 
 ## Contributing
 
